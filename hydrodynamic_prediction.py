@@ -38,7 +38,7 @@ def discharge_to_stage_height(discharge, rating_curve):
 def stage_height_to_depth(stage_height, hand_array, convert_ft_to_m=False):
     nrows, ncolumns = hand_array.shape
     nan_value = numpy.min(hand_array)
-    result_array = numpy.full_like(hand_array, nan_value)
+    result_array = numpy.full_like(hand_array, -1)
     for i in range(nrows):
         for j in range(ncolumns):
             if hand_array[i,j] != nan_value:
