@@ -82,6 +82,7 @@ if __name__ == '__main__':
         help='A list of proportions that sum to 1; these represent fractions of the total rainfall volume per timestep.',
         nargs='*',
         type=float,
+        # TODO: Provide better hydrograph options
         default=[0.042] * 23 + [0.034]
     )
     parser.add_argument(
