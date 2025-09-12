@@ -1,12 +1,12 @@
 import argparse
-import math
+import numpy
 from datetime import datetime
 
 from downscaling_prediction import downscale_boston_cesm
 from hydrological_prediction import calculate_discharge_from_precipitation
 from hydrodynamic_prediction import generate_flood_from_discharge
 
-from constants import PERCENTILES
+from constants import PERCENTILES, DEFAULT_HYDROGRAPH
 
 
 def run_end_to_end(
@@ -43,7 +43,7 @@ def validate_args(args):
     )
     if annual_probability <= 0 or annual_probability >= 1:
         raise Exception('Annual probability must be >0 and <1.')
-    if math.fsum(unitless_hydrograph) != 1:
+    if numpy.sum(unitless_hydrograph) != 1:
         raise Exception('Unitless hydrograph must have a sum of 1.')
 
     potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile]
@@ -82,8 +82,7 @@ if __name__ == '__main__':
         help='A list of proportions that sum to 1; these represent fractions of the total rainfall volume per timestep.',
         nargs='*',
         type=float,
-        # TODO: Provide better hydrograph options
-        default=[0.042] * 23 + [0.034]
+        default=DEFAULT_HYDROGRAPH
     )
     parser.add_argument(
         '--pet_percentile', '-e',

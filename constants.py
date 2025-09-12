@@ -1,3 +1,4 @@
+import numpy
 from pathlib import Path
 
 
@@ -28,6 +29,9 @@ PERCENTILES = dict(
     sm={25: 66.499363, 50: 93.047207, 75: 128.145816, 90: 165.511228},
     gw={25: 5.213258, 50: 9.747519, 75: 17.521663, 90: 27.152108},
 )
+
+NORMAL_DIST_DAY = numpy.random.normal(loc=1, scale=0.5, size=24)
+DEFAULT_HYDROGRAPH = NORMAL_DIST_DAY / numpy.sum(NORMAL_DIST_DAY)
 
 WATERSHED_AREA_SQ_M = 656.38 * 1e6
 CUBIC_METERS_TO_CUBIC_FEET = 35.31467
