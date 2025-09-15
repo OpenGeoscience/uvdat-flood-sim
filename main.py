@@ -45,7 +45,7 @@ def validate_args(args):
     )
     if annual_probability <= 0 or annual_probability >= 1:
         raise Exception('Annual probability must be >0 and <1.')
-    if numpy.sum(unitless_hydrograph) != 1:
+    if not numpy.isclose(numpy.sum(unitless_hydrograph), 1):
         raise Exception('Unitless hydrograph must have a sum of 1.')
 
     potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile]
