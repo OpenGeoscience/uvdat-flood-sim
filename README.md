@@ -39,3 +39,9 @@ To see the help menu explaining how to use arguments to specify input values:
 ```
 python main.py -h
 ```
+
+## Viewing Results
+
+By default, results will be displayed with a `matplotlib` animation. This animation is saved in the outputs folder as `animation.gif`.
+
+Results are also saved in the outputs folder as a multiframe geospatial tiff called `flood_simulation.tif`. To view this image on an interactive map, run `jupyter notebook`, which will open a Jupyter homepage in your default browser. Open the notebook called `view_results.ipynb` and run the first cell.
