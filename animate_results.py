@@ -26,7 +26,7 @@ def animate(results):
     animation = ani.FuncAnimation(fig, update, n_frames, interval=1000)
     animation.save(
         OUTPUTS_FOLDER / 'animation.gif',
-        writer=ani.PillowWriter(fps=30)
+        writer=ani.PillowWriter(fps=2)
     )
 
     plt.colorbar(im, label='Flood depth (m)')
