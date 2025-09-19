@@ -6,6 +6,7 @@ from downscaling_prediction import downscale_boston_cesm
 from hydrological_prediction import calculate_discharge_from_precipitation
 from hydrodynamic_prediction import generate_flood_from_discharge
 from animate_results import animate
+from save_results import write_multiframe_geotiff
 
 from constants import PERCENTILES, DEFAULT_HYDROGRAPH
 
@@ -36,6 +37,7 @@ def run_end_to_end(
     print(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
 
     print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
+    write_multiframe_geotiff(flood)
     animate(flood)
 
 

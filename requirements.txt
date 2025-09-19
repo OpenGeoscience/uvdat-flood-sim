@@ -4,3 +4,7 @@ rasterio
 pandas
 scikit-learn==1.3.0
 numpy<2
+matplotlib
+pyproj
+large_image[gdal,zarr,converter]==1.33.0
+--find-links https://girder.github.io/large_image_wheels

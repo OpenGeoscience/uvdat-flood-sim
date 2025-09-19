@@ -39,3 +39,7 @@ To see the help menu explaining how to use arguments to specify input values:
 ```
 python main.py -h
 ```
+
+## Viewing Results
+
+By default, results will be displayed with a `matplotlib` animation. This animation is saved in the outputs folder as `animation.gif`. Results are also saved in the outputs folder as a multiframe geospatial tiff called `flood_simulation.tif`, which can be added to UVDAT for visualization.
