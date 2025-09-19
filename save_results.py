@@ -38,8 +38,8 @@ def write_multiframe_geotiff(results):
     for t in range(n_frames):
         sink.addTile(results[t], x=0, y=0, t=t)
     sink.projection = GEOSPATIAL_PROJECTION
-    min_lng, min_lat, max_lng, max_lat = GEOSPATIAL_BOUNDS
-    sink.gcps = [[min_lng, min_lat, 0, 0], [max_lng, max_lat, size_x, size_y]]
+    min_lng, max_lat, max_lng, min_lat = GEOSPATIAL_BOUNDS
+    sink.gcps = [[min_lng, max_lat, 0, 0], [max_lng, min_lat, size_x, size_y]]
     sink.write(output_path, keepFloat=True, overwriteAllowed=True, compression='zstd')
 
     modify_tiff_tags(output_path, nodata=numpy.min(results))
