@@ -8,18 +8,18 @@ from hydrodynamic_prediction import generate_flood_from_discharge
 from animate_results import animate
 from save_results import write_multiframe_geotiff
 
-from constants import PERCENTILES, DEFAULT_HYDROGRAPH
+from constants import PERCENTILES, HYDROGRAPHS
 
 
 def run_end_to_end(
     time_period: str,
     annual_probability: float,
-    unitless_hydrograph: list[float],
+    hydrograph: list[float],
     potential_evapotranspiration: float,
     soil_moisture: float,
     ground_water: float,
 ):
-    print(f'Inputs: {time_period=}, {annual_probability=}, {unitless_hydrograph=}, {potential_evapotranspiration=}, {soil_moisture=}, {ground_water=}')
+    print(f'Inputs: {time_period=}, {annual_probability=}, {hydrograph=}, {potential_evapotranspiration=}, {soil_moisture=}, {ground_water=}')
     start = datetime.now()
 
     level = downscale_boston_cesm(time_period, annual_probability)
@@ -33,7 +33,7 @@ def run_end_to_end(
     )
     print(f'Hydrological prediction: discharge value = {q}')
 
-    flood = generate_flood_from_discharge(q, unitless_hydrograph)
+    flood = generate_flood_from_discharge(q, hydrograph)
     print(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
 
     print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
@@ -42,22 +42,21 @@ def run_end_to_end(
 
 
 def validate_args(args):
-    time_period, annual_probability, unitless_hydrograph = (
-        args.time_period, args.annual_probability, args.unitless_hydrograph
+    time_period, annual_probability, hydrograph = (
+        args.time_period, args.annual_probability, args.hydrograph
     )
     if annual_probability <= 0 or annual_probability >= 1:
         raise Exception('Annual probability must be >0 and <1.')
-    if not numpy.isclose(numpy.sum(unitless_hydrograph), 1):
-        raise Exception('Unitless hydrograph must have a sum of 1.')
 
     potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile]
     soil_moisture = PERCENTILES['sm'][args.sm_percentile]
     ground_water = PERCENTILES['gw'][args.gw_percentile]
+    hydrograph = HYDROGRAPHS.get(hydrograph)
 
     return (
         time_period,
         annual_probability,
-        unitless_hydrograph,
+        hydrograph,
         potential_evapotranspiration,
         soil_moisture,
         ground_water,
@@ -82,11 +81,15 @@ if __name__ == '__main__':
         default=0.04
     )
     parser.add_argument(
-        '--unitless_hydrograph', '-u',
-        help='A list of proportions that sum to 1; these represent fractions of the total rainfall volume per timestep.',
-        nargs='*',
-        type=float,
-        default=DEFAULT_HYDROGRAPH
+        '--hydrograph', '-g',
+        help=(
+            'A selection of a 24-hour hydrograph. '
+            '"short_charles" represents a hydrograph for the main river and '
+            '"long_charles" represents a hydrograph for the main river plus additional upstream water sources.'
+        ),
+        choices=['short_charles', 'long_charles'],
+        type=str,
+        default='short_charles'
     )
     parser.add_argument(
         '--pet_percentile', '-e',
