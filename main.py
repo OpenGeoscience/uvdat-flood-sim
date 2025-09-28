@@ -42,8 +42,8 @@ def run_end_to_end(
 
 
 def validate_args(args):
-    time_period, annual_probability, hydrograph = (
-        args.time_period, args.annual_probability, args.hydrograph
+    time_period, annual_probability, hydrograph_name, hydrograph = (
+        args.time_period, args.annual_probability, args.hydrograph_name, args.hydrograph
     )
     if annual_probability <= 0 or annual_probability >= 1:
         raise Exception('Annual probability must be >0 and <1.')
@@ -51,7 +51,7 @@ def validate_args(args):
     potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile]
     soil_moisture = PERCENTILES['sm'][args.sm_percentile]
     ground_water = PERCENTILES['gw'][args.gw_percentile]
-    hydrograph = HYDROGRAPHS.get(hydrograph)
+    hydrograph = hydrograph or HYDROGRAPHS.get(hydrograph_name)
 
     return (
         time_period,
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         default=0.04
     )
     parser.add_argument(
-        '--hydrograph', '-g',
+        '--hydrograph-name', '-n',
         help=(
             'A selection of a 24-hour hydrograph. '
             '"short_charles" represents a hydrograph for the main river and '
@@ -90,6 +90,12 @@ if __name__ == '__main__':
         choices=['short_charles', 'long_charles'],
         type=str,
         default='short_charles'
+    )
+    parser.add_argument(
+        '--hydrograph', '-g',
+        help='A hydrograph expressed as a list of numeric values where each value represents a proportion of total discharge',
+        nargs='*',
+        type=float,
     )
     parser.add_argument(
         '--pet_percentile', '-e',
