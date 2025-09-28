@@ -1,11 +1,12 @@
 import argparse
 import numpy
 from datetime import datetime
+from pathlib import Path
 
 from downscaling_prediction import downscale_boston_cesm
 from hydrological_prediction import calculate_discharge_from_precipitation
 from hydrodynamic_prediction import generate_flood_from_discharge
-from animate_results import animate
+from animate_results import animate as animate_results
 from save_results import write_multiframe_geotiff
 
 from constants import PERCENTILES, HYDROGRAPHS
@@ -18,8 +19,14 @@ def run_end_to_end(
     potential_evapotranspiration: float,
     soil_moisture: float,
     ground_water: float,
+    output_path: str | None,
+    animate: bool,
 ):
-    print(f'Inputs: {time_period=}, {annual_probability=}, {hydrograph=}, {potential_evapotranspiration=}, {soil_moisture=}, {ground_water=}')
+    print((
+        f'Inputs: {time_period=}, {annual_probability=}, {hydrograph=}, '
+        f'{potential_evapotranspiration=}, {soil_moisture=}, {ground_water=}, '
+        f'{output_path=}, {animate=}'
+    ))
     start = datetime.now()
 
     level = downscale_boston_cesm(time_period, annual_probability)
@@ -37,13 +44,16 @@ def run_end_to_end(
     print(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
 
     print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
-    write_multiframe_geotiff(flood)
-    animate(flood)
+    write_multiframe_geotiff(flood, output_path=output_path)
+    if animate:
+        animate_results(flood)
 
 
 def validate_args(args):
-    time_period, annual_probability, hydrograph_name, hydrograph = (
-        args.time_period, args.annual_probability, args.hydrograph_name, args.hydrograph
+    time_period, annual_probability, hydrograph_name, hydrograph, output_path, animate = (
+        args.time_period, args.annual_probability,
+        args.hydrograph_name, args.hydrograph,
+        args.output_path, args.no_animation,
     )
     if annual_probability <= 0 or annual_probability >= 1:
         raise Exception('Annual probability must be >0 and <1.')
@@ -52,6 +62,7 @@ def validate_args(args):
     soil_moisture = PERCENTILES['sm'][args.sm_percentile]
     ground_water = PERCENTILES['gw'][args.gw_percentile]
     hydrograph = hydrograph or HYDROGRAPHS.get(hydrograph_name)
+    output_path = Path(output_path)
 
     return (
         time_period,
@@ -60,6 +71,8 @@ def validate_args(args):
         potential_evapotranspiration,
         soil_moisture,
         ground_water,
+        output_path,
+        animate
     )
 
 
@@ -117,6 +130,16 @@ if __name__ == '__main__':
         choices=[25, 50, 75, 90],
         type=int,
         default=25,
+    )
+    parser.add_argument(
+        '--output_path', '-o',
+        help='Path to write the flood simulation tif file',
+        type=str,
+    )
+    parser.add_argument(
+        '--no_animation',
+        help='Disable display of result animation via matplotlib',
+        action='store_false'
     )
     args = parser.parse_args()
     run_end_to_end(*validate_args(args))

@@ -30,9 +30,10 @@ def modify_tiff_tags(path, nodata=None):
     tifftools.write_tiff(info, path, allowExisting=True, ifdsFirst=True, dedup=True)
 
 
-def write_multiframe_geotiff(results):
-    OUTPUTS_FOLDER.mkdir(parents=True, exist_ok=True)
-    output_path = OUTPUTS_FOLDER / 'flood_simulation.tif'
+def write_multiframe_geotiff(results, output_path=None):
+    if output_path is None:
+        output_path = OUTPUTS_FOLDER / 'flood_simulation.tif'
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     n_frames, size_y, size_x = results.shape
     sink = large_image_source_zarr.new()
     for t in range(n_frames):
