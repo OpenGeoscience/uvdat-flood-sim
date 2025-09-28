@@ -16,7 +16,7 @@ TODO
 
 2. Annual Probability: the probability that a flood of this magnitude will occur in any given year. This value must be greater than 0 and less than 1. The default is 0.04, which represents a 1 in 25 year flood.
 
-3. Unitless Hydrograph: a list of proportions that sum to 1; these represent fractions of the total rainfall volume per timestep. The default list represents a normal distribution over 24 hours.
+3. Hydrograph: a list of proportions that sum to 1; these represent fractions of the total rainfall volume per timestep.
 
 4. Potential Evapotranspiration Percentile: Select the 25th, 50th, 75th, or 90th percentile value for potential evapotranspiration
 
