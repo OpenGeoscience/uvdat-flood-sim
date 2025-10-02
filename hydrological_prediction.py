@@ -7,10 +7,10 @@ from constants import HYDROLOGICAL_MODEL_URL, HYDROLOGICAL_MODEL_PATH, WATERSHED
 
 
 def calculate_discharge_from_precipitation(
-    precipitation: float,
-    potential_evapotranspiration: float,
-    soil_moisture: float,
-    ground_water: float,
+    precipitation: float, # Precipitation is a one-day precipitation in millimeters
+    potential_evapotranspiration: float, # One-day potential ET in physical units (never seen by user)
+    soil_moisture: float, # Soil moisture in physical units (never seen by user)
+    ground_water: float, # Ground water in physical units (never seen by user)
 ):
     download_file(HYDROLOGICAL_MODEL_URL, HYDROLOGICAL_MODEL_PATH)
     model = numpy.load(HYDROLOGICAL_MODEL_PATH)
@@ -49,7 +49,7 @@ def calculate_discharge_from_precipitation(
     gw = ground_water + rec - bas
     # update state of ground_water
     ground_water = gw
-    q_mm_per_day = irun + srun + bas  # Q is the runoff/streamflow/discharge value
-    q_m3_per_day = q_mm_per_day / 1000 * WATERSHED_AREA_SQ_M
-    q_ft3_per_sec = q_m3_per_day / SECONDS_PER_DAY * CUBIC_METERS_TO_CUBIC_FEET
+    q_mm_per_day = irun + srun + bas  # Q is the runoff value across the watershed
+    q_m3_per_day = q_mm_per_day / 1000 * WATERSHED_AREA_SQ_M # Convert runoff to discharge
+    q_ft3_per_sec = q_m3_per_day / SECONDS_PER_DAY * CUBIC_METERS_TO_CUBIC_FEET # Convert to favorite units of discharge
     return q_ft3_per_sec

@@ -17,7 +17,7 @@ def annual_precipitation_maxima(daily):
 
 
 def downscale_boston_cesm(cesm_id, annual_probability):
-    cesm = CESM_DATA[cesm_id]
+    cesm = CESM_DATA[cesm_id] # CESM data is a projection of 20 years of daily weather conditions, spatially coarse over a large region
     for url, path in [
         (DOWNSCALING_MODEL_URL, DOWNSCALING_MODEL_PATH),
         (cesm.get('url'), cesm.get('filename')),
@@ -27,8 +27,8 @@ def downscale_boston_cesm(cesm_id, annual_probability):
     cesm_data = numpy.load(cesm.get('filename'), allow_pickle=True)
     with open(DOWNSCALING_MODEL_PATH, 'rb') as m:
         model = pickle.load(m)
-    prediction = model.predict(cesm_data)
-    apm = annual_precipitation_maxima(prediction)
-    level = gev.isf(annual_probability, *gev.fit(apm))
+    prediction = model.predict(cesm_data) # Model predicts local watershed precipitation based on each day's weather
+    apm = annual_precipitation_maxima(prediction) # Obtain annual precipitation maxima (APM) for each of the 20 years
+    level = gev.isf(annual_probability, *gev.fit(apm)) # Fit a GEV distrubution to the APM and calculate the level for the desired probability
 
     return level

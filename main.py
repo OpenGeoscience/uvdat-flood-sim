@@ -16,9 +16,9 @@ def run_end_to_end(
     time_period: str, # Two-decade future period whose climate we are interested in.
     annual_probability: float, # Annual probability of a 1-day extreme precipitation event happening.
     hydrograph: list[float], # List of 24 floats where each is a proportion of flood volume passing through in one hour.
-    potential_evapotranspiration: float, # This is a percentile. Can be 25, 50, 75, or 90.
-    soil_moisture: float, # This is a percentile. Can be 25, 50, 75, or 90.
-    ground_water: float, # This is a percentile. Can be 25, 50, 75, or 90.
+    potential_evapotranspiration: float, # This function takes PET in physical units, but the user never inputs those directly.
+    soil_moisture: float, # This function takes PET in physical units, but the user never inputs those directly.
+    ground_water: float, # This function takes PET in physical units, but the user never inputs those directly.
     output_path: str | None,
     animate: bool,
 ):
@@ -64,9 +64,9 @@ def validate_args(args):
     if annual_probability <= 0 or annual_probability >= 1:
         raise Exception('Annual probability must be >0 and <1.')
 
-    potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile]
-    soil_moisture = PERCENTILES['sm'][args.sm_percentile]
-    ground_water = PERCENTILES['gw'][args.gw_percentile]
+    potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile] # Converts PET percentile into physical units
+    soil_moisture = PERCENTILES['sm'][args.sm_percentile] # Converts SM percentile into physical units
+    ground_water = PERCENTILES['gw'][args.gw_percentile] # Converts GW percentile into physical units
     hydrograph = hydrograph or HYDROGRAPHS.get(hydrograph_name)
     output_path = Path(output_path)
 
