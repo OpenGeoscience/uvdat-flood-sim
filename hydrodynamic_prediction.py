@@ -14,7 +14,7 @@ from constants import (
 
 
 def discharge_to_stage_height(discharge, rating_curve):
-    # Expects rating curve as a Pandas dataframe formatted like the one above.
+    # Expects rating curve as a Pandas dataframe with columns 'discharge_cfs' and 'gage_height_ft'
     # Units of discharge need to agree with rating curve's units.
     rc = rating_curve
     d = discharge # d is the user-provided discharge

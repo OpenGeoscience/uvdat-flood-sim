@@ -13,12 +13,12 @@ from constants import PERCENTILES, HYDROGRAPHS
 
 
 def run_end_to_end(
-    time_period: str,
-    annual_probability: float,
-    hydrograph: list[float],
-    potential_evapotranspiration: float,
-    soil_moisture: float,
-    ground_water: float,
+    time_period: str, # Two-decade future period whose climate we are interested in.
+    annual_probability: float, # Annual probability of a 1-day extreme precipitation event happening.
+    hydrograph: list[float], # List of 24 floats where each is a proportion of flood volume passing through in one hour.
+    potential_evapotranspiration: float, # This is a percentile. Can be 25, 50, 75, or 90.
+    soil_moisture: float, # This is a percentile. Can be 25, 50, 75, or 90.
+    ground_water: float, # This is a percentile. Can be 25, 50, 75, or 90.
     output_path: str | None,
     animate: bool,
 ):
@@ -29,9 +29,11 @@ def run_end_to_end(
     ))
     start = datetime.now()
 
+    # Obtain extreme precipitation level
     level = downscale_boston_cesm(time_period, annual_probability)
-    print(f'Downscaling prediction: precipitation level = {level}')
+    print(f'Downscaling prediction: precipitation level = {level}') # Extreme precipitation level in millimeters
 
+    # Obtain discharge
     q = calculate_discharge_from_precipitation(
         level,
         potential_evapotranspiration,
@@ -39,11 +41,15 @@ def run_end_to_end(
         ground_water,
     )
     print(f'Hydrological prediction: discharge value = {q}')
+    # Discharge is in cubic feet per second, for the same 1 day as the precipitation.
 
-    flood = generate_flood_from_discharge(q, hydrograph)
+    # Obtain flood simulation
+    flood = generate_flood_from_discharge(q, hydrograph) # numpy array with 2 spatial dimensions and 1 time dimension
     print(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
 
     print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
+
+    # Convert flood to multiframe GeoTIFF
     write_multiframe_geotiff(flood, output_path=output_path)
     if animate:
         animate_results(flood)
