@@ -9,16 +9,16 @@ from hydrodynamic_prediction import generate_flood_from_discharge
 from animate_results import animate as animate_results
 from save_results import write_multiframe_geotiff
 
-from constants import PERCENTILES, HYDROGRAPHS
+from constants import PERCENTILES, HYDROGRAPHS, SECONDS_PER_DAY
 
 
 def run_end_to_end(
-    time_period: str,
-    annual_probability: float,
-    hydrograph: list[float],
-    potential_evapotranspiration: float,
-    soil_moisture: float,
-    ground_water: float,
+    time_period: str, # Two-decade future period whose climate we are interested in.
+    annual_probability: float, # Annual probability of a 1-day extreme precipitation event happening.
+    hydrograph: list[float], # List of 24 floats where each is a proportion of flood volume passing through in one hour.
+    potential_evapotranspiration: float, # This function takes PET in physical units, but the user never inputs those directly.
+    soil_moisture: float, # This function takes PET in physical units, but the user never inputs those directly.
+    ground_water: float, # This function takes PET in physical units, but the user never inputs those directly.
     output_path: str | None,
     animate: bool,
 ):
@@ -29,9 +29,11 @@ def run_end_to_end(
     ))
     start = datetime.now()
 
+    # Obtain extreme precipitation level
     level = downscale_boston_cesm(time_period, annual_probability)
-    print(f'Downscaling prediction: precipitation level = {level}')
+    print(f'Downscaling prediction: precipitation level = {level}') # Extreme precipitation level in millimeters
 
+    # Obtain discharge
     q = calculate_discharge_from_precipitation(
         level,
         potential_evapotranspiration,
@@ -39,11 +41,16 @@ def run_end_to_end(
         ground_water,
     )
     print(f'Hydrological prediction: discharge value = {q}')
+    # Discharge is in cubic feet per second, for the same 1 day as the precipitation.
 
-    flood = generate_flood_from_discharge(q, hydrograph)
+    # Obtain flood simulation
+    flood = generate_flood_from_discharge(q * SECONDS_PER_DAY, hydrograph) # input q should be in cubic feet per day
+    # flood is a numpy array with 2 spatial dimensions and 1 time dimension
     print(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
 
     print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
+
+    # Convert flood to multiframe GeoTIFF
     write_multiframe_geotiff(flood, output_path=output_path)
     if animate:
         animate_results(flood)
@@ -58,9 +65,9 @@ def validate_args(args):
     if annual_probability <= 0 or annual_probability >= 1:
         raise Exception('Annual probability must be >0 and <1.')
 
-    potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile]
-    soil_moisture = PERCENTILES['sm'][args.sm_percentile]
-    ground_water = PERCENTILES['gw'][args.gw_percentile]
+    potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile] # Converts PET percentile into physical units
+    soil_moisture = PERCENTILES['sm'][args.sm_percentile] # Converts SM percentile into physical units
+    ground_water = PERCENTILES['gw'][args.gw_percentile] # Converts GW percentile into physical units
     hydrograph = hydrograph or HYDROGRAPHS.get(hydrograph_name)
     if output_path is not None:
         output_path = Path(output_path)

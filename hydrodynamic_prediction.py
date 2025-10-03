@@ -14,7 +14,7 @@ from constants import (
 
 
 def discharge_to_stage_height(discharge, rating_curve):
-    # Expects rating curve as a Pandas dataframe formatted like the one above.
+    # Expects rating curve as a Pandas dataframe with columns 'discharge_cfs' and 'gage_height_ft'
     # Units of discharge need to agree with rating curve's units.
     rc = rating_curve
     d = discharge # d is the user-provided discharge
@@ -36,10 +36,11 @@ def discharge_to_stage_height(discharge, rating_curve):
 
 
 def stage_height_to_depth(stage_height, hand_array, convert_ft_to_m=False):
+    # Using the stage height for this reach, and using the HAND map as an array, produce flood depth map as an array
     nrows, ncolumns = hand_array.shape
     nan_value = numpy.min(hand_array)
     result_array = numpy.full_like(hand_array, -1)
-    for i in range(nrows):
+    for i in range(nrows): # Flood depth calculation happens pixel by pixel
         for j in range(ncolumns):
             if hand_array[i,j] != nan_value:
                 height_diff = stage_height - hand_array[i,j]
@@ -52,10 +53,13 @@ def stage_height_to_depth(stage_height, hand_array, convert_ft_to_m=False):
 
 
 def create_hydrograph(q, unitless_hydrograph):
-    return [numpy.round(q * rate / 3600, 3) for rate in unitless_hydrograph]
+    # "q" is the total flood volume, which has units of volume. For example, cubic feet.
+    # "Unitless hydrograph" is a set of rates where volume is a proportion of total volume and time is in per-hour units
+
+    return [numpy.round(q * rate / 3600, 3) for rate in unitless_hydrograph] # Converts to volume units and per-second time units
 
 
-def generate_flood_from_discharge(q, unitless_hydrograph):
+def generate_flood_from_discharge(q, unitless_hydrograph): # q needs to be total flood volume, e.g. cubic feet per day for a 1-day flood
     download_file(RATING_CURVE_URL, RATING_CURVE_PATH)
     rating_curve = pandas.read_csv(RATING_CURVE_PATH, sep=None, engine='python', skiprows=[1])
 
@@ -65,8 +69,8 @@ def generate_flood_from_discharge(q, unitless_hydrograph):
 
     results = []
     for hourly_proportion in unitless_hydrograph:
-        hourly_rate = q * hourly_proportion
-        sh = discharge_to_stage_height(hourly_rate, rating_curve)
+        hourly_rate = q * hourly_proportion / 3600 # q provides physical volume units, and the /3600 converts per-hours to per-seconds
+        sh = discharge_to_stage_height(hourly_rate, rating_curve) # Here, the hourly_rate must be in cubic feet per second
         results.append(stage_height_to_depth(sh, hand_array, convert_ft_to_m=True))
 
     return numpy.array(results)

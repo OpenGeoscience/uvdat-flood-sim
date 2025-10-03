@@ -8,7 +8,9 @@ This end-to-end dynamic flood simulation is intended for use with the Analytics 
 
 ## Explanation
 
-TODO
+First, an AI downscaling model uses regional climate projections to determine future local precipitation conditions, such as the intensity of extreme rainstorms. These extreme precipitation levels are fed into a hydrological model, which uses precipitation and evapotranspiration to determine runoff and discharge. Finally, a hydrodynamic model uses discharge to map flood depth over time.
+
+This is a proof of concept for the Charles River in Boston that could be translated to other rivers and cities. The user selects the inputs described below, and the output is a flood simulation, represented as a multiframe stacked GeoTIFF raster, a time-varying map of flood depth with one frame per hour for 24 hours.
 
 ## Inputs
 
