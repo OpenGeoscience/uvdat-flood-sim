@@ -9,7 +9,7 @@ from hydrodynamic_prediction import generate_flood_from_discharge
 from animate_results import animate as animate_results
 from save_results import write_multiframe_geotiff
 
-from constants import PERCENTILES, HYDROGRAPHS
+from constants import PERCENTILES, HYDROGRAPHS, SECONDS_PER_DAY
 
 
 def run_end_to_end(
@@ -44,7 +44,8 @@ def run_end_to_end(
     # Discharge is in cubic feet per second, for the same 1 day as the precipitation.
 
     # Obtain flood simulation
-    flood = generate_flood_from_discharge(q, hydrograph) # numpy array with 2 spatial dimensions and 1 time dimension
+    flood = generate_flood_from_discharge(q * SECONDS_PER_DAY, hydrograph) # input q should be in cubic feet per day
+    # flood is a numpy array with 2 spatial dimensions and 1 time dimension
     print(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
 
     print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')

@@ -53,13 +53,13 @@ def stage_height_to_depth(stage_height, hand_array, convert_ft_to_m=False):
 
 
 def create_hydrograph(q, unitless_hydrograph):
-    # "q" is the total flood volume, which has units of volume. For example, 
+    # "q" is the total flood volume, which has units of volume. For example, cubic feet.
     # "Unitless hydrograph" is a set of rates where volume is a proportion of total volume and time is in per-hour units
 
     return [numpy.round(q * rate / 3600, 3) for rate in unitless_hydrograph] # Converts to volume units and per-second time units
 
 
-def generate_flood_from_discharge(q, unitless_hydrograph):
+def generate_flood_from_discharge(q, unitless_hydrograph): # q needs to be total flood volume, e.g. cubic feet per day for a 1-day flood
     download_file(RATING_CURVE_URL, RATING_CURVE_PATH)
     rating_curve = pandas.read_csv(RATING_CURVE_PATH, sep=None, engine='python', skiprows=[1])
 
