@@ -69,7 +69,8 @@ def validate_args(args):
     soil_moisture = PERCENTILES['sm'][args.sm_percentile] # Converts SM percentile into physical units
     ground_water = PERCENTILES['gw'][args.gw_percentile] # Converts GW percentile into physical units
     hydrograph = hydrograph or HYDROGRAPHS.get(hydrograph_name)
-    output_path = Path(output_path)
+    if output_path is not None:
+        output_path = Path(output_path)
 
     return (
         time_period,
@@ -141,6 +142,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--output_path', '-o',
         help='Path to write the flood simulation tif file',
+        nargs='?',
         type=str,
     )
     parser.add_argument(
