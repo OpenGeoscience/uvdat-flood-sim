@@ -8,8 +8,8 @@ from utils import download_file
 from constants import (
     RATING_CURVE_URL,
     RATING_CURVE_PATH,
-    WALTHAM_HAND_URL,
-    WALTHAM_HAND_PATH,
+    HAND_URL,
+    HAND_PATH,
 )
 
 
@@ -63,8 +63,8 @@ def generate_flood_from_discharge(q, unitless_hydrograph): # q needs to be total
     download_file(RATING_CURVE_URL, RATING_CURVE_PATH)
     rating_curve = pandas.read_csv(RATING_CURVE_PATH, sep=None, engine='python', skiprows=[1])
 
-    download_file(WALTHAM_HAND_URL, WALTHAM_HAND_PATH)
-    with rasterio.open(WALTHAM_HAND_PATH) as f:
+    download_file(HAND_URL, HAND_PATH)
+    with rasterio.open(HAND_PATH) as f:
         hand_array = f.read(1)
 
     results = []
