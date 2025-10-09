@@ -1,5 +1,6 @@
 import argparse
 import numpy
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -9,7 +10,8 @@ from hydrodynamic_prediction import generate_flood_from_discharge
 from animate_results import animate as animate_results
 from save_results import write_multiframe_geotiff
 
-from constants import PERCENTILES, HYDROGRAPHS, SECONDS_PER_DAY
+from constants import PERCENTILES_URL, PERCENTILES_PATH, HYDROGRAPHS, SECONDS_PER_DAY
+from utils import download_file
 
 
 def run_end_to_end(
@@ -65,9 +67,21 @@ def validate_args(args):
     if annual_probability <= 0 or annual_probability >= 1:
         raise Exception('Annual probability must be >0 and <1.')
 
-    potential_evapotranspiration = PERCENTILES['pet'][args.pet_percentile] # Converts PET percentile into physical units
-    soil_moisture = PERCENTILES['sm'][args.sm_percentile] # Converts SM percentile into physical units
-    ground_water = PERCENTILES['gw'][args.gw_percentile] # Converts GW percentile into physical units
+    download_file(PERCENTILES_URL, PERCENTILES_PATH)
+    with open(PERCENTILES_PATH) as f:
+        percentiles = json.load(f)
+
+    pet_percentile = int(args.pet_percentile)
+    sm_percentile = int(args.sm_percentile)
+    gw_percentile = int(args.gw_percentile)
+
+    if any(p < 0 or p > 100 for p in [pet_percentile, sm_percentile, gw_percentile]):
+        raise Exception('Percentile values must be between 0 and 100 (inclusive).')
+
+    potential_evapotranspiration = percentiles['pet'][pet_percentile] # Converts PET percentile into physical units
+    soil_moisture = percentiles['sm'][sm_percentile] # Converts SM percentile into physical units
+    ground_water = percentiles['gw'][gw_percentile] # Converts GW percentile into physical units
+
     hydrograph = hydrograph or HYDROGRAPHS.get(hydrograph_name)
     if output_path is not None:
         output_path = Path(output_path)
