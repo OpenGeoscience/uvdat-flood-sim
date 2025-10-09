@@ -14,8 +14,8 @@ HYDROLOGICAL_MODEL_PATH = DOWNLOADS_FOLDER / 'hydrological_model.npy'
 RATING_CURVE_URL = 'https://data.kitware.com/api/v1/item/68c463bd7d52b0d5b570f342/download'
 RATING_CURVE_PATH = DOWNLOADS_FOLDER / 'rating_curve.csv'
 
-WALTHAM_HAND_URL = 'https://data.kitware.com/api/v1/item/68c463bc7d52b0d5b570f33f/download'
-WALTHAM_HAND_PATH = DOWNLOADS_FOLDER / 'waltham_hand.tif'
+HAND_URL = 'https://data.kitware.com/api/v1/item/68e59bc1e5c7892678d7f036/download'
+HAND_PATH = DOWNLOADS_FOLDER / 'boston_hand.tif'
 
 CESM_DATA = {
     '2030-2050': dict(
