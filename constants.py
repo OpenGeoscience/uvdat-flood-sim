@@ -17,18 +17,15 @@ RATING_CURVE_PATH = DOWNLOADS_FOLDER / 'rating_curve.csv'
 HAND_URL = 'https://data.kitware.com/api/v1/item/68e59bc1e5c7892678d7f036/download'
 HAND_PATH = DOWNLOADS_FOLDER / 'boston_hand.tif'
 
+PERCENTILES_URL = 'https://data.kitware.com/api/v1/item/68e7be67e5c7892678d7f03c/download'
+PERCENTILES_PATH = DOWNLOADS_FOLDER / 'flood_param_percentiles.json'
+
 CESM_DATA = {
     '2030-2050': dict(
         filename=DOWNLOADS_FOLDER / 'boston_cesm2-001_2031_2050.npy',
         url='https://data.kitware.com/api/v1/item/68c463cb7d52b0d5b570f34b/download',
     )
 }
-
-PERCENTILES = dict(
-    pet={25: 1.569104, 50: 3.153439, 75: 5.245736, 90: 7.168763},
-    sm={25: 66.499363, 50: 93.047207, 75: 128.145816, 90: 165.511228},
-    gw={25: 5.213258, 50: 9.747519, 75: 17.521663, 90: 27.152108},
-)
 
 HYDROGRAPHS = dict(
     short_charles=[
