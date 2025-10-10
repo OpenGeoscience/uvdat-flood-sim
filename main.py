@@ -135,21 +135,18 @@ if __name__ == '__main__':
     parser.add_argument(
         '--pet_percentile', '-e',
         help='Potential evapotranspiration percentile',
-        choices=[25, 50, 75, 90],
         type=int,
         default=25,
     )
     parser.add_argument(
         '--sm_percentile', '-s',
         help='Soil moisture percentile',
-        choices=[25, 50, 75, 90],
         type=int,
         default=25,
     )
     parser.add_argument(
         '--gw_percentile', '-w',
         help='Ground water percentile',
-        choices=[25, 50, 75, 90],
         type=int,
         default=25,
     )
