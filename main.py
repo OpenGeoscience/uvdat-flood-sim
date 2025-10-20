@@ -23,6 +23,7 @@ def run_end_to_end(
     ground_water: float, # This function takes PET in physical units, but the user never inputs those directly.
     output_path: str | None,
     animate: bool,
+    tiff_writer: str,
 ):
     print((
         f'Inputs: {time_period=}, {annual_probability=}, {hydrograph=}, '
@@ -53,7 +54,7 @@ def run_end_to_end(
     print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
 
     # Convert flood to multiframe GeoTIFF
-    write_multiframe_geotiff(flood, output_path=output_path)
+    write_multiframe_geotiff(flood, output_path=output_path, writer=tiff_writer)
     if animate:
         animate_results(flood)
 
@@ -94,7 +95,8 @@ def validate_args(args):
         soil_moisture,
         ground_water,
         output_path,
-        animate
+        animate,
+        args.tiff_writer,
     )
 
 
@@ -160,6 +162,13 @@ if __name__ == '__main__':
         '--no_animation',
         help='Disable display of result animation via matplotlib',
         action='store_false'
+    )
+    parser.add_argument(
+        '--tiff-writer',
+        help='Library to use for writing result tiff',
+        choices=['rasterio', 'large_image'],
+        type=str,
+        default='rasterio',
     )
     args = parser.parse_args()
     run_end_to_end(*validate_args(args))
