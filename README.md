@@ -14,7 +14,7 @@ This is a proof of concept for the Charles River in Boston that could be transla
 
 ## Inputs
 
-1. Time Period: the 20 year time period in which to predict a flood. Right now, the only option available is `2030-2050`, which is the default value.
+1. Time Period: the 20 year time period in which to predict a flood. Options are "2031-2050" and "2041-2060" (the former is the default).
 
 2. Annual Probability: the probability that a flood of this magnitude will occur in any given year. This value must be greater than 0 and less than 1. The default is 0.04, which represents a 1 in 25 year flood.
 
