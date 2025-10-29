@@ -107,9 +107,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '--time_period', '-t',
         help='The 20 year time period in which to predict a flood',
-        choices=['2030-2050'],
+        choices=['2031-2050', '2041-2060'],
         type=str,
-        default='2030-2050',
+        default='2031-2050',
     )
     parser.add_argument(
         '--annual_probability', '-p',

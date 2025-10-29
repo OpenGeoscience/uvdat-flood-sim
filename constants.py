@@ -21,9 +21,13 @@ PERCENTILES_URL = 'https://data.kitware.com/api/v1/item/68e7be67e5c7892678d7f03c
 PERCENTILES_PATH = DOWNLOADS_FOLDER / 'flood_param_percentiles.json'
 
 CESM_DATA = {
-    '2030-2050': dict(
+    '2031-2050': dict(
         filename=DOWNLOADS_FOLDER / 'boston_cesm2-001_2031_2050.npy',
         url='https://data.kitware.com/api/v1/item/68c463cb7d52b0d5b570f34b/download',
+    ),
+    '2041-2060': dict(
+        filename=DOWNLOADS_FOLDER / 'boston_cesm2-001_2041_2060.npy',
+        url='https://data.kitware.com/api/v1/file/6900c8808c59593f4ceaecf2/download',
     )
 }
 
