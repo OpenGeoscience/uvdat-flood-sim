@@ -28,18 +28,18 @@ This is a proof of concept for the Charles River in Boston that could be transla
 
 ## Example usage
 
-Install requirements with `pip install -r requirements.txt`.
+Install requirements with `pip install -e .`.
 
 To run a flood simulation with default inputs:
 
 ```
-python main.py
+python -m uvdat_flood_sim
 ```
 
 To see the help menu explaining how to use arguments to specify input values:
 
 ```
-python main.py -h
+python -m uvdat_flood_sim -h
 ```
 
 ## Viewing Results
