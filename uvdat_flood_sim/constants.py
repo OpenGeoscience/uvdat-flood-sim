@@ -1,8 +1,8 @@
+from datetime import timedelta
 from pathlib import Path
 
 
 DOWNLOADS_FOLDER = Path('downloads')
-OUTPUTS_FOLDER = Path('outputs')
 
 DOWNSCALING_MODEL_URL = 'https://data.kitware.com/api/v1/item/68c463cb7d52b0d5b570f348/download'
 DOWNSCALING_MODEL_PATH = DOWNLOADS_FOLDER / 'downscaling_model.pkl'
@@ -31,23 +31,23 @@ CESM_DATA = {
 }
 
 HYDROGRAPHS = dict(
-    short_charles=[
+    short_charles=(
         0.006, 0.026, 0.066, 0.111, 0.138, 0.143,
         0.128, 0.102, 0.080, 0.054, 0.038, 0.030,
         0.021, 0.016, 0.012, 0.008, 0.006, 0.005,
         0.003, 0.002, 0.002, 0.001, 0.001, 0.001,
-    ],
-    long_charles=[
+    ),
+    long_charles=(
         0.003, 0.008, 0.029, 0.048, 0.072, 0.092,
         0.102, 0.104, 0.097, 0.088, 0.071, 0.063,
         0.046, 0.035, 0.028, 0.024, 0.018, 0.015,
         0.012, 0.010, 0.007, 0.006, 0.005, 0.004,
-    ],
+    ),
 )
 
 WATERSHED_AREA_SQ_M = 656.38 * 1e6
 CUBIC_METERS_TO_CUBIC_FEET = 35.31467
-SECONDS_PER_DAY = 86400
+SECONDS_PER_DAY = int(timedelta(days=1).total_seconds())
 
 GEOSPATIAL_PROJECTION = 'epsg:4326'
 GEOSPATIAL_BOUNDS = [

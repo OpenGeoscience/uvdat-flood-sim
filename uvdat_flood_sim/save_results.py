@@ -1,7 +1,7 @@
 import logging
 import numpy
 
-from .constants import OUTPUTS_FOLDER, GEOSPATIAL_PROJECTION, GEOSPATIAL_BOUNDS
+from .constants import GEOSPATIAL_PROJECTION, GEOSPATIAL_BOUNDS
 
 logger = logging.getLogger('uvdat_flood_sim')
 
@@ -71,10 +71,8 @@ def large_image_write(results, output_path):
     logger.info(f'Wrote GeoTIFF to {output_path}.')
 
 
-def write_multiframe_geotiff(results, output_path=None, writer='rasterio'):
-    if output_path is None:
-        output_path = OUTPUTS_FOLDER / 'flood_simulation.tif'
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+def write_multiframe_geotiff(results, output_folder, writer='rasterio'):
+    output_path = output_folder / 'flood_simulation.tif'
     if writer == 'rasterio':
         rasterio_write(results, output_path)
     elif writer == 'large_image':
