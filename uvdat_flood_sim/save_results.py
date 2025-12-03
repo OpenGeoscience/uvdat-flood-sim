@@ -1,6 +1,9 @@
+import logging
 import numpy
 
 from .constants import OUTPUTS_FOLDER, GEOSPATIAL_PROJECTION, GEOSPATIAL_BOUNDS
+
+logger = logging.getLogger('uvdat_flood_sim')
 
 
 def rasterio_write(results, output_path):
@@ -23,7 +26,7 @@ def rasterio_write(results, output_path):
     )
     with rasterio.open(output_path, 'w', **profile) as dst:
         dst.write(results)
-    print(f'Wrote GeoTIFF to {output_path}.')
+    logger.info(f'Wrote GeoTIFF to {output_path}.')
 
 
 def modify_tiff_tags(path, nodata=None):
@@ -65,7 +68,7 @@ def large_image_write(results, output_path):
     sink.write(output_path, keepFloat=True, overwriteAllowed=True, compression='zstd')
 
     modify_tiff_tags(output_path, nodata=numpy.min(results))
-    print(f'Wrote GeoTIFF to {output_path}.')
+    logger.info(f'Wrote GeoTIFF to {output_path}.')
 
 
 def write_multiframe_geotiff(results, output_path=None, writer='rasterio'):

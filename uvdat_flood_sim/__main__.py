@@ -1,6 +1,7 @@
 import argparse
 import json
 from datetime import datetime
+import logging
 from pathlib import Path
 
 from .constants import PERCENTILES_URL, PERCENTILES_PATH, HYDROGRAPHS, SECONDS_PER_DAY
@@ -10,6 +11,8 @@ from .hydrodynamic_prediction import generate_flood_from_discharge
 from .animate_results import animate as animate_results
 from .save_results import write_multiframe_geotiff
 from .utils import download_file
+
+logger = logging.getLogger('uvdat_flood_sim')
 
 
 def run_end_to_end(
@@ -23,7 +26,7 @@ def run_end_to_end(
     animate: bool,
     tiff_writer: str,
 ):
-    print((
+    logger.info((
         f'Inputs: {time_period=}, {annual_probability=}, {hydrograph=}, '
         f'{potential_evapotranspiration=}, {soil_moisture=}, {ground_water=}, '
         f'{output_path=}, {animate=}'
@@ -32,7 +35,7 @@ def run_end_to_end(
 
     # Obtain extreme precipitation level
     level = downscale_boston_cesm(time_period, annual_probability)
-    print(f'Downscaling prediction: precipitation level = {level}') # Extreme precipitation level in millimeters
+    logger.info(f'Downscaling prediction: precipitation level = {level}') # Extreme precipitation level in millimeters
 
     # Obtain discharge
     q = calculate_discharge_from_precipitation(
@@ -41,15 +44,15 @@ def run_end_to_end(
         soil_moisture,
         ground_water,
     )
-    print(f'Hydrological prediction: discharge value = {q}')
+    logger.info(f'Hydrological prediction: discharge value = {q}')
     # Discharge is in cubic feet per second, for the same 1 day as the precipitation.
 
     # Obtain flood simulation
     flood = generate_flood_from_discharge(q * SECONDS_PER_DAY, hydrograph) # input q should be in cubic feet per day
     # flood is a numpy array with 2 spatial dimensions and 1 time dimension
-    print(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
+    logger.info(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
 
-    print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
+    logger.info(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
 
     # Convert flood to multiframe GeoTIFF
     write_multiframe_geotiff(flood, output_path=output_path, writer=tiff_writer)
@@ -169,6 +172,7 @@ def main():
         default='rasterio',
     )
     args = parser.parse_args()
+    logging.basicConfig(level=logging.INFO)
     run_end_to_end(*validate_args(args))
 
 
