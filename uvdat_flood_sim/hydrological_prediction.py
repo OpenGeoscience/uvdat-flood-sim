@@ -2,8 +2,12 @@
 
 import numpy
 
-from .utils import download_file
-from .constants import HYDROLOGICAL_MODEL_URL, HYDROLOGICAL_MODEL_PATH, WATERSHED_AREA_SQ_M, CUBIC_METERS_TO_CUBIC_FEET, SECONDS_PER_DAY
+from .constants import (
+    HYDROLOGICAL_MODEL_PATH,
+    WATERSHED_AREA_SQ_M,
+    CUBIC_METERS_TO_CUBIC_FEET,
+    SECONDS_PER_DAY,
+)
 
 
 def calculate_discharge_from_precipitation(
@@ -12,7 +16,6 @@ def calculate_discharge_from_precipitation(
     soil_moisture: float, # Soil moisture in physical units (never seen by user)
     ground_water: float, # Ground water in physical units (never seen by user)
 ):
-    download_file(HYDROLOGICAL_MODEL_URL, HYDROLOGICAL_MODEL_PATH)
     model = numpy.load(HYDROLOGICAL_MODEL_PATH)
     (insc, coeff, sq, smsc, sub, crak, k) = model
 

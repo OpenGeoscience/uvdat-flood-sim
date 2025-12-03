@@ -1,16 +1,10 @@
 # https://github.com/augustposch/hand_hydrodynamic_2025aug/blob/main/notebooks/hydrodynamic_hand.ipynb
 
-import rasterio
 import numpy
 import pandas
+import rasterio
 
-from .utils import download_file
-from .constants import (
-    RATING_CURVE_URL,
-    RATING_CURVE_PATH,
-    HAND_URL,
-    HAND_PATH,
-)
+from .constants import RATING_CURVE_PATH, HAND_PATH
 
 
 def discharge_to_stage_height(discharge, rating_curve):
@@ -60,10 +54,8 @@ def create_hydrograph(q, unitless_hydrograph):
 
 
 def generate_flood_from_discharge(q, unitless_hydrograph): # q needs to be total flood volume, e.g. cubic feet per day for a 1-day flood
-    download_file(RATING_CURVE_URL, RATING_CURVE_PATH)
     rating_curve = pandas.read_csv(RATING_CURVE_PATH, sep=None, engine='python', skiprows=[1])
 
-    download_file(HAND_URL, HAND_PATH)
     with rasterio.open(HAND_PATH) as f:
         hand_array = f.read(1)
 

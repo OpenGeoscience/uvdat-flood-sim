@@ -1,0 +1,2 @@
+# Track all files in uvdat_flood_sim/data/ with Git LFS
+uvdat_flood_sim/data/** filter=lfs diff=lfs merge=lfs -text

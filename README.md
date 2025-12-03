@@ -26,6 +26,26 @@ This is a proof of concept for the Charles River in Boston that could be transla
 
 6. Ground Water Percentile: Select the 25th, 50th, 75th, or 90th percentile value for ground water
 
+## Prerequisites
+
+This project uses [Git LFS](https://git-lfs.github.com/) to store large data files. Before cloning the repository, install Git LFS:
+
+```bash
+# On Ubuntu/Debian
+sudo apt-get install git-lfs
+
+# On macOS with Homebrew
+brew install git-lfs
+
+# On Windows, download from https://git-lfs.github.com/
+```
+
+After installation, initialize Git LFS:
+
+```bash
+git lfs install
+```
+
 ## Example usage
 
 Install requirements with `pip install -e .`.
