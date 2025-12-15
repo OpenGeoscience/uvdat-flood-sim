@@ -5,8 +5,8 @@ import numpy
 import math
 from scipy.stats import genextreme as gev
 
-from utils import download_file
-from constants import CESM_DATA, DOWNSCALING_MODEL_URL, DOWNSCALING_MODEL_PATH
+from .utils import download_file
+from .constants import CESM_DATA, DOWNSCALING_MODEL_URL, DOWNSCALING_MODEL_PATH
 
 
 def annual_precipitation_maxima(daily):

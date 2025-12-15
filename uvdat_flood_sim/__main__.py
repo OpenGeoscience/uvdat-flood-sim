@@ -1,17 +1,15 @@
 import argparse
-import numpy
 import json
 from datetime import datetime
 from pathlib import Path
 
-from downscaling_prediction import downscale_boston_cesm
-from hydrological_prediction import calculate_discharge_from_precipitation
-from hydrodynamic_prediction import generate_flood_from_discharge
-from animate_results import animate as animate_results
-from save_results import write_multiframe_geotiff
-
-from constants import PERCENTILES_URL, PERCENTILES_PATH, HYDROGRAPHS, SECONDS_PER_DAY
-from utils import download_file
+from .constants import PERCENTILES_URL, PERCENTILES_PATH, HYDROGRAPHS, SECONDS_PER_DAY
+from .downscaling_prediction import downscale_boston_cesm
+from .hydrological_prediction import calculate_discharge_from_precipitation
+from .hydrodynamic_prediction import generate_flood_from_discharge
+from .animate_results import animate as animate_results
+from .save_results import write_multiframe_geotiff
+from .utils import download_file
 
 
 def run_end_to_end(
@@ -100,7 +98,7 @@ def validate_args(args):
     )
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
         prog='Dynamic Flood Simulation'
     )
@@ -172,3 +170,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
     run_end_to_end(*validate_args(args))
+
+
+if __name__ == '__main__':
+    main()

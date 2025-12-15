@@ -1,6 +1,6 @@
 import numpy
-from pathlib import Path
-from constants import OUTPUTS_FOLDER, GEOSPATIAL_PROJECTION, GEOSPATIAL_BOUNDS
+
+from .constants import OUTPUTS_FOLDER, GEOSPATIAL_PROJECTION, GEOSPATIAL_BOUNDS
 
 
 def rasterio_write(results, output_path):

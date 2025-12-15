@@ -4,8 +4,8 @@ import rasterio
 import numpy
 import pandas
 
-from utils import download_file
-from constants import (
+from .utils import download_file
+from .constants import (
     RATING_CURVE_URL,
     RATING_CURVE_PATH,
     HAND_URL,

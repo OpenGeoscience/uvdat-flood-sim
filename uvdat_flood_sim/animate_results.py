@@ -3,7 +3,7 @@ import numpy
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 
-from constants import OUTPUTS_FOLDER
+from .constants import OUTPUTS_FOLDER
 
 def animate(results):
     OUTPUTS_FOLDER.mkdir(parents=True, exist_ok=True)

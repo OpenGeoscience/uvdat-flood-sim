@@ -2,8 +2,8 @@
 
 import numpy
 
-from utils import download_file
-from constants import HYDROLOGICAL_MODEL_URL, HYDROLOGICAL_MODEL_PATH, WATERSHED_AREA_SQ_M, CUBIC_METERS_TO_CUBIC_FEET, SECONDS_PER_DAY
+from .utils import download_file
+from .constants import HYDROLOGICAL_MODEL_URL, HYDROLOGICAL_MODEL_PATH, WATERSHED_AREA_SQ_M, CUBIC_METERS_TO_CUBIC_FEET, SECONDS_PER_DAY
 
 
 def calculate_discharge_from_precipitation(
