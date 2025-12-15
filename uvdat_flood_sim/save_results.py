@@ -1,6 +1,13 @@
-import numpy
+import logging
+from pathlib import Path
+from typing import Literal
 
-from .constants import OUTPUTS_FOLDER, GEOSPATIAL_PROJECTION, GEOSPATIAL_BOUNDS
+import numpy
+from numpy.typing import NDArray
+
+from .constants import GEOSPATIAL_PROJECTION, GEOSPATIAL_BOUNDS
+
+logger = logging.getLogger('uvdat_flood_sim')
 
 
 def rasterio_write(results, output_path):
@@ -23,7 +30,7 @@ def rasterio_write(results, output_path):
     )
     with rasterio.open(output_path, 'w', **profile) as dst:
         dst.write(results)
-    print(f'Wrote GeoTIFF to {output_path}.')
+    logger.info(f'Wrote GeoTIFF to {output_path}.')
 
 
 def modify_tiff_tags(path, nodata=None):
@@ -65,14 +72,17 @@ def large_image_write(results, output_path):
     sink.write(output_path, keepFloat=True, overwriteAllowed=True, compression='zstd')
 
     modify_tiff_tags(output_path, nodata=numpy.min(results))
-    print(f'Wrote GeoTIFF to {output_path}.')
+    logger.info(f'Wrote GeoTIFF to {output_path}.')
 
 
-def write_multiframe_geotiff(results, output_path=None, writer='rasterio'):
-    if output_path is None:
-        output_path = OUTPUTS_FOLDER / 'flood_simulation.tif'
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+def write_multiframe_geotiff(
+    *,
+    flood_results: NDArray[numpy.float32],
+    output_folder: Path,
+    writer: Literal['rasterio', 'large_image'] = 'rasterio',
+) -> None:
+    output_path = output_folder / 'flood_simulation.tif'
     if writer == 'rasterio':
-        rasterio_write(results, output_path)
+        rasterio_write(flood_results, output_path)
     elif writer == 'large_image':
-        large_image_write(results, output_path)
+        large_image_write(flood_results, output_path)

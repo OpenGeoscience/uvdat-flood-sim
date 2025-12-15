@@ -3,10 +3,8 @@ import numpy
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 
-from .constants import OUTPUTS_FOLDER
 
-def animate(results):
-    OUTPUTS_FOLDER.mkdir(parents=True, exist_ok=True)
+def animate(results, output_folder):
     n_frames = results.shape[0]
     vmin, vmax = numpy.min(results), numpy.max(results)
 
@@ -25,7 +23,7 @@ def animate(results):
 
     animation = ani.FuncAnimation(fig, update, n_frames, interval=1000)
     animation.save(
-        OUTPUTS_FOLDER / 'animation.gif',
+        output_folder / 'animation.gif',
         writer=ani.PillowWriter(fps=2)
     )
 

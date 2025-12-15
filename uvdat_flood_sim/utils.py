@@ -1,4 +1,7 @@
+import logging
 import requests
+
+logger = logging.getLogger('uvdat_flood_sim')
 
 
 def download_file(url, path):
@@ -9,4 +12,4 @@ def download_file(url, path):
         with open(path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-        print(f'Downloaded file to {path}.')
+        logger.info(f'Downloaded file to {path}.')

@@ -14,6 +14,7 @@ maintainers = [
   { name = "August Posch", email = "augustposch@augustposch.us" },
 ]
 dependencies = [
+  "click",
   "matplotlib",
   "numpy<2",
   "pandas",

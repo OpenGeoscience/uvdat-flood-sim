@@ -1,175 +1,123 @@
-import argparse
-import json
-from datetime import datetime
+import logging
 from pathlib import Path
+import time
+from typing import Literal
 
-from .constants import PERCENTILES_URL, PERCENTILES_PATH, HYDROGRAPHS, SECONDS_PER_DAY
-from .downscaling_prediction import downscale_boston_cesm
-from .hydrological_prediction import calculate_discharge_from_precipitation
-from .hydrodynamic_prediction import generate_flood_from_discharge
+import click
+
 from .animate_results import animate as animate_results
+from .run import run_sim
 from .save_results import write_multiframe_geotiff
-from .utils import download_file
+
+logger = logging.getLogger('uvdat_flood_sim')
 
 
-def run_end_to_end(
-    time_period: str, # Two-decade future period whose climate we are interested in.
-    annual_probability: float, # Annual probability of a 1-day extreme precipitation event happening.
-    hydrograph: list[float], # List of 24 floats where each is a proportion of flood volume passing through in one hour.
-    potential_evapotranspiration: float, # This function takes PET in physical units, but the user never inputs those directly.
-    soil_moisture: float, # This function takes PET in physical units, but the user never inputs those directly.
-    ground_water: float, # This function takes PET in physical units, but the user never inputs those directly.
-    output_path: str | None,
-    animate: bool,
-    tiff_writer: str,
-):
-    print((
+def _ensure_dir_exists(ctx, param, value):
+    value.mkdir(parents=True, exist_ok=True)
+    return value
+
+
+@click.command(name='Dynamic Flood Simulation')
+@click.option(
+    '--time-period', '-t',
+    type=click.Choice(['2031-2050', '2041-2060']),
+    default='2031-2050',
+    help='The 20 year time period in which to predict a flood'
+)
+@click.option(
+    '--annual-probability', '-p',
+    type=click.FloatRange(min=0, min_open=True, max=1, max_open=True),
+    default=0.04,
+    help='The probability that a flood of this magnitude will occur in any given year'
+)
+@click.option(
+    '--hydrograph-name', '-n',
+    type=click.Choice(['short_charles', 'long_charles']),
+    default='short_charles',
+    help=(
+        'A selection of a 24-hour hydrograph. '
+        '"short_charles" represents a hydrograph for the main river and '
+        '"long_charles" represents a hydrograph for the main river plus additional upstream water sources.'
+    )
+)
+@click.option(
+    '--hydrograph', '-g',
+    type=float,
+    nargs=24,
+    help='A hydrograph expressed as a list of numeric values where each value represents a proportion of total discharge'
+)
+@click.option(
+    '--pet-percentile', '-e',
+    type=click.IntRange(min=0, max=100),
+    default=25,
+    help='Potential evapotranspiration percentile'
+)
+@click.option(
+    '--sm-percentile', '-s',
+    type=click.IntRange(min=0, max=100),
+    default=25,
+    help='Soil moisture percentile'
+)
+@click.option(
+    '--gw-percentile', '-w',
+    type=click.IntRange(min=0, max=100),
+    default=25,
+    help='Ground water percentile'
+)
+@click.option(
+    '--output-path', '-o',
+    type=click.Path(writable=True, file_okay=False, path_type=Path),
+    default=Path.cwd() / 'outputs',
+    callback=_ensure_dir_exists,
+    help='Directory to write the flood simulation outputs'
+)
+@click.option(
+    '--animation/--no-animation',
+    default=True,
+    help='Display result animation via matplotlib'
+)
+@click.option(
+    '--tiff-writer',
+    type=click.Choice(['rasterio', 'large_image']),
+    default='rasterio',
+    help='Library to use for writing result tiff'
+)
+def main(
+    time_period: Literal['2031-2050', '2041-2060'],
+    annual_probability: float,
+    hydrograph_name: Literal['short_charles', 'long_charles'],
+    hydrograph: tuple[float, ...],
+    pet_percentile: int,
+    sm_percentile: int,
+    gw_percentile: int,
+    output_path: Path,
+    animation: bool,
+    tiff_writer: Literal['rasterio', 'large_image'],
+) -> None:
+    logging.basicConfig(level=logging.INFO)
+
+    logger.info((
         f'Inputs: {time_period=}, {annual_probability=}, {hydrograph=}, '
-        f'{potential_evapotranspiration=}, {soil_moisture=}, {ground_water=}, '
-        f'{output_path=}, {animate=}'
+        f'{pet_percentile=}, {sm_percentile=}, {gw_percentile=}, '
+        f'{output_path=}, {animation=}'
     ))
-    start = datetime.now()
+    start = time.perf_counter()
 
-    # Obtain extreme precipitation level
-    level = downscale_boston_cesm(time_period, annual_probability)
-    print(f'Downscaling prediction: precipitation level = {level}') # Extreme precipitation level in millimeters
-
-    # Obtain discharge
-    q = calculate_discharge_from_precipitation(
-        level,
-        potential_evapotranspiration,
-        soil_moisture,
-        ground_water,
-    )
-    print(f'Hydrological prediction: discharge value = {q}')
-    # Discharge is in cubic feet per second, for the same 1 day as the precipitation.
-
-    # Obtain flood simulation
-    flood = generate_flood_from_discharge(q * SECONDS_PER_DAY, hydrograph) # input q should be in cubic feet per day
-    # flood is a numpy array with 2 spatial dimensions and 1 time dimension
-    print(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
-
-    print(f'Done in {(datetime.now() - start).total_seconds()} seconds.\n')
-
-    # Convert flood to multiframe GeoTIFF
-    write_multiframe_geotiff(flood, output_path=output_path, writer=tiff_writer)
-    if animate:
-        animate_results(flood)
-
-
-def validate_args(args):
-    time_period, annual_probability, hydrograph_name, hydrograph, output_path, animate = (
-        args.time_period, args.annual_probability,
-        args.hydrograph_name, args.hydrograph,
-        args.output_path, args.no_animation,
-    )
-    if annual_probability <= 0 or annual_probability >= 1:
-        raise Exception('Annual probability must be >0 and <1.')
-
-    download_file(PERCENTILES_URL, PERCENTILES_PATH)
-    with open(PERCENTILES_PATH) as f:
-        percentiles = json.load(f)
-
-    pet_percentile = int(args.pet_percentile)
-    sm_percentile = int(args.sm_percentile)
-    gw_percentile = int(args.gw_percentile)
-
-    if any(p < 0 or p > 100 for p in [pet_percentile, sm_percentile, gw_percentile]):
-        raise Exception('Percentile values must be between 0 and 100 (inclusive).')
-
-    potential_evapotranspiration = percentiles['pet'][pet_percentile] # Converts PET percentile into physical units
-    soil_moisture = percentiles['sm'][sm_percentile] # Converts SM percentile into physical units
-    ground_water = percentiles['gw'][gw_percentile] # Converts GW percentile into physical units
-
-    hydrograph = hydrograph or HYDROGRAPHS.get(hydrograph_name)
-    if output_path is not None:
-        output_path = Path(output_path)
-
-    return (
-        time_period,
-        annual_probability,
-        hydrograph,
-        potential_evapotranspiration,
-        soil_moisture,
-        ground_water,
-        output_path,
-        animate,
-        args.tiff_writer,
+    flood = run_sim(
+        time_period=time_period,
+        annual_probability=annual_probability,
+        hydrograph_name=hydrograph_name,
+        hydrograph=hydrograph if hydrograph else None,
+        pet_percentile=pet_percentile,
+        sm_percentile=sm_percentile,
+        gw_percentile=gw_percentile,
     )
 
+    write_multiframe_geotiff(flood, output_path, writer=tiff_writer)
+    logger.info(f'Done in {time.perf_counter() - start} seconds.')
 
-def main():
-    parser = argparse.ArgumentParser(
-        prog='Dynamic Flood Simulation'
-    )
-    parser.add_argument(
-        '--time_period', '-t',
-        help='The 20 year time period in which to predict a flood',
-        choices=['2031-2050', '2041-2060'],
-        type=str,
-        default='2031-2050',
-    )
-    parser.add_argument(
-        '--annual_probability', '-p',
-        help='The probability that a flood of this magnitude will occur in any given year',
-        type=float,
-        default=0.04
-    )
-    parser.add_argument(
-        '--hydrograph-name', '-n',
-        help=(
-            'A selection of a 24-hour hydrograph. '
-            '"short_charles" represents a hydrograph for the main river and '
-            '"long_charles" represents a hydrograph for the main river plus additional upstream water sources.'
-        ),
-        choices=['short_charles', 'long_charles'],
-        type=str,
-        default='short_charles'
-    )
-    parser.add_argument(
-        '--hydrograph', '-g',
-        help='A hydrograph expressed as a list of numeric values where each value represents a proportion of total discharge',
-        nargs='*',
-        type=float,
-    )
-    parser.add_argument(
-        '--pet_percentile', '-e',
-        help='Potential evapotranspiration percentile',
-        type=int,
-        default=25,
-    )
-    parser.add_argument(
-        '--sm_percentile', '-s',
-        help='Soil moisture percentile',
-        type=int,
-        default=25,
-    )
-    parser.add_argument(
-        '--gw_percentile', '-w',
-        help='Ground water percentile',
-        type=int,
-        default=25,
-    )
-    parser.add_argument(
-        '--output_path', '-o',
-        help='Path to write the flood simulation tif file',
-        nargs='?',
-        type=str,
-    )
-    parser.add_argument(
-        '--no_animation',
-        help='Disable display of result animation via matplotlib',
-        action='store_false'
-    )
-    parser.add_argument(
-        '--tiff-writer',
-        help='Library to use for writing result tiff',
-        choices=['rasterio', 'large_image'],
-        type=str,
-        default='rasterio',
-    )
-    args = parser.parse_args()
-    run_end_to_end(*validate_args(args))
+    if animation:
+        animate_results(flood, output_path)
 
 
 if __name__ == '__main__':
