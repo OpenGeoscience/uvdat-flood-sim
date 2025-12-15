@@ -1,5 +1,9 @@
 import logging
+from pathlib import Path
+from typing import Literal
+
 import numpy
+from numpy.typing import NDArray
 
 from .constants import GEOSPATIAL_PROJECTION, GEOSPATIAL_BOUNDS
 
@@ -71,9 +75,14 @@ def large_image_write(results, output_path):
     logger.info(f'Wrote GeoTIFF to {output_path}.')
 
 
-def write_multiframe_geotiff(results, output_folder, writer='rasterio'):
+def write_multiframe_geotiff(
+    *,
+    flood_results: NDArray[numpy.float32],
+    output_folder: Path,
+    writer: Literal['rasterio', 'large_image'] = 'rasterio',
+) -> None:
     output_path = output_folder / 'flood_simulation.tif'
     if writer == 'rasterio':
-        rasterio_write(results, output_path)
+        rasterio_write(flood_results, output_path)
     elif writer == 'large_image':
-        large_image_write(results, output_path)
+        large_image_write(flood_results, output_path)
