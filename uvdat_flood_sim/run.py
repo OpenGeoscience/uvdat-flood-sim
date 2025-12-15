@@ -5,11 +5,10 @@ from typing import Literal
 import numpy
 from numpy.typing import NDArray
 
-from .constants import PERCENTILES_URL, PERCENTILES_PATH, HYDROGRAPHS, SECONDS_PER_DAY
+from .constants import PERCENTILES_PATH, HYDROGRAPHS, SECONDS_PER_DAY
 from .downscaling_prediction import downscale_boston_cesm
 from .hydrological_prediction import calculate_discharge_from_precipitation
 from .hydrodynamic_prediction import generate_flood_from_discharge
-from .utils import download_file
 
 logger = logging.getLogger('uvdat_flood_sim')
 
@@ -36,8 +35,7 @@ def run_sim(
     :param gw_percentile: Ground water percentile.
     :return: Array with 2 spatial dimensions and 1 time dimension.
     """
-    download_file(PERCENTILES_URL, PERCENTILES_PATH)
-    with open(PERCENTILES_PATH) as f:
+    with PERCENTILES_PATH.open('r') as f:
         percentiles = json.load(f)
 
     if hydrograph is None and hydrograph_name is None:

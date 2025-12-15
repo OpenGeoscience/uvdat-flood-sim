@@ -1,33 +1,19 @@
 from datetime import timedelta
+import importlib.resources
 from pathlib import Path
 
 
-DOWNLOADS_FOLDER = Path('downloads')
+DATA_FOLDER = importlib.resources.files('uvdat_flood_sim.data')
 
-DOWNSCALING_MODEL_URL = 'https://data.kitware.com/api/v1/item/68c463cb7d52b0d5b570f348/download'
-DOWNSCALING_MODEL_PATH = DOWNLOADS_FOLDER / 'downscaling_model.pkl'
-
-HYDROLOGICAL_MODEL_URL = 'https://data.kitware.com/api/v1/item/68c463bd7d52b0d5b570f345/download'
-HYDROLOGICAL_MODEL_PATH = DOWNLOADS_FOLDER / 'hydrological_model.npy'
-
-RATING_CURVE_URL = 'https://data.kitware.com/api/v1/item/68c463bd7d52b0d5b570f342/download'
-RATING_CURVE_PATH = DOWNLOADS_FOLDER / 'rating_curve.csv'
-
-HAND_URL = 'https://data.kitware.com/api/v1/item/68e59bc1e5c7892678d7f036/download'
-HAND_PATH = DOWNLOADS_FOLDER / 'boston_hand.tif'
-
-PERCENTILES_URL = 'https://data.kitware.com/api/v1/item/68e7be67e5c7892678d7f03c/download'
-PERCENTILES_PATH = DOWNLOADS_FOLDER / 'flood_param_percentiles.json'
+DOWNSCALING_MODEL_PATH = DATA_FOLDER / 'downscaling_model.pkl'
+HYDROLOGICAL_MODEL_PATH = DATA_FOLDER / 'hydrological_model.npy'
+RATING_CURVE_PATH = DATA_FOLDER / 'rating_curve.csv'
+HAND_PATH = DATA_FOLDER / 'boston_hand.tif'
+PERCENTILES_PATH = DATA_FOLDER / 'flood_param_percentiles.json'
 
 CESM_DATA = {
-    '2031-2050': dict(
-        filename=DOWNLOADS_FOLDER / 'boston_cesm2-001_2031_2050.npy',
-        url='https://data.kitware.com/api/v1/item/68c463cb7d52b0d5b570f34b/download',
-    ),
-    '2041-2060': dict(
-        filename=DOWNLOADS_FOLDER / 'boston_cesm2-001_2041_2060.npy',
-        url='https://data.kitware.com/api/v1/file/6900c8808c59593f4ceaecf2/download',
-    )
+    '2031-2050': DATA_FOLDER / 'boston_cesm2-001_2031_2050.npy',
+    '2041-2060': DATA_FOLDER / 'boston_cesm2-001_2041_2060.npy',
 }
 
 HYDROGRAPHS = dict(
