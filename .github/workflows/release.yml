@@ -1,0 +1,27 @@
+name: release
+on:
+  release:
+    types: [published]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          # Tags are needed to compute the current version number
+          fetch-depth: 0
+          lfs: true
+      - name: Set up Python
+        uses: actions/setup-python@v6
+      - name: Install Python build
+        run: |
+          pip install build
+      - name: Build the Python distribution
+        run: |
+          python -m build
+      - name: Publish the Python distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
