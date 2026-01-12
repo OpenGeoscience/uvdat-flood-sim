@@ -19,6 +19,12 @@ def _ensure_dir_exists(ctx, param, value):
 
 @click.command(name='Dynamic Flood Simulation')
 @click.option(
+    '--initial-conditions-id', '-i',
+    type=click.Choice(['001', '002', '003']),
+    default='001',
+    help='Initialization for real-world emissions scenarios to represent future climate conditions',
+)
+@click.option(
     '--time-period', '-t',
     type=click.Choice(['2031-2050', '2041-2060']),
     default='2031-2050',
@@ -83,6 +89,7 @@ def _ensure_dir_exists(ctx, param, value):
     help='Library to use for writing result tiff'
 )
 def main(
+    initial_conditions_id: Literal['001', '002', '003'],
     time_period: Literal['2031-2050', '2041-2060'],
     annual_probability: float,
     hydrograph_name: Literal['short_charles', 'long_charles'],
@@ -97,13 +104,14 @@ def main(
     logging.basicConfig(level=logging.INFO)
 
     logger.info((
-        f'Inputs: {time_period=}, {annual_probability=}, {hydrograph=}, '
+        f'Inputs: {initial_conditions_id=}, {time_period=}, {annual_probability=}, {hydrograph=}, '
         f'{pet_percentile=}, {sm_percentile=}, {gw_percentile=}, '
         f'{output_path=}, {animation=}'
     ))
     start = time.perf_counter()
 
     flood = run_sim(
+        initial_conditions_id=initial_conditions_id,
         time_period=time_period,
         annual_probability=annual_probability,
         hydrograph_name=hydrograph_name,
@@ -113,11 +121,18 @@ def main(
         gw_percentile=gw_percentile,
     )
 
-    write_multiframe_geotiff(flood, output_path, writer=tiff_writer)
+    write_multiframe_geotiff(
+        flood_results=flood,
+        output_path=output_path / 'flood_simulation.tif',
+        writer=tiff_writer,
+    )
     logger.info(f'Done in {time.perf_counter() - start} seconds.')
 
     if animation:
-        animate_results(flood, output_path)
+        animate_results(
+            flood_results=flood,
+            output_path=output_path / 'animation.gif',
+        )
 
 
 if __name__ == '__main__':

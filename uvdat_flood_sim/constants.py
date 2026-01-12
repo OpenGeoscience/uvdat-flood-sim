@@ -12,8 +12,18 @@ HAND_PATH = DATA_FOLDER / 'boston_hand.tif'
 PERCENTILES_PATH = DATA_FOLDER / 'flood_param_percentiles.json'
 
 CESM_DATA = {
-    '2031-2050': DATA_FOLDER / 'boston_cesm2-001_2031_2050.npy',
-    '2041-2060': DATA_FOLDER / 'boston_cesm2-001_2041_2060.npy',
+    '001': {
+        '2031-2050': DATA_FOLDER / 'boston_cesm2-001_2031_2050.npy',
+        '2041-2060': DATA_FOLDER / 'boston_cesm2-001_2041_2060.npy',
+    },
+    '002': {
+        '2031-2050': DATA_FOLDER / 'boston_cesm2-002_2031_2050.npy',
+        '2041-2060': DATA_FOLDER / 'boston_cesm2-002_2041_2060.npy',
+    },
+    '003': {
+        '2031-2050': DATA_FOLDER / 'boston_cesm2-003_2031_2050.npy',
+        '2041-2060': DATA_FOLDER / 'boston_cesm2-003_2041_2060.npy',
+    },
 }
 
 HYDROGRAPHS = dict(
