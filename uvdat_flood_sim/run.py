@@ -15,6 +15,7 @@ logger = logging.getLogger('uvdat_flood_sim')
 
 def run_sim(
     *,
+    initial_conditions_id: Literal['001', '002', '003'],
     time_period: Literal['2031-2050', '2041-2060'],
     annual_probability: float,
     hydrograph_name: Literal['short_charles', 'long_charles'] | None = None,
@@ -49,7 +50,7 @@ def run_sim(
     ground_water = percentiles['gw'][gw_percentile]
 
     # Extreme precipitation level in millimeters
-    level = downscale_boston_cesm(time_period, annual_probability)
+    level = downscale_boston_cesm(initial_conditions_id, time_period, annual_probability)
     logger.info(f'Downscaling prediction: precipitation level = {level}')
 
     # Obtain discharge
