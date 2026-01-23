@@ -16,8 +16,9 @@ def annual_precipitation_maxima(daily):
     return apm
 
 
-def downscale_boston_cesm(cesm_id, annual_probability):
-    cesm_file = CESM_DATA[cesm_id] # CESM data is a projection of 20 years of daily weather conditions, spatially coarse over a large region
+def downscale_boston_cesm(initial_conditions_id, time_period, annual_probability):
+    # CESM data is a projection of 20 years of daily weather conditions, spatially coarse over a large region
+    cesm_file = CESM_DATA[initial_conditions_id][time_period]
     cesm_data = numpy.load(cesm_file, allow_pickle=True)
     with DOWNSCALING_MODEL_PATH.open('rb') as m:
         model = pickle.load(m)

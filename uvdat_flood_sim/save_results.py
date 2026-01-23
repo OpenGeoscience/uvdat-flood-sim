@@ -78,10 +78,9 @@ def large_image_write(results, output_path):
 def write_multiframe_geotiff(
     *,
     flood_results: NDArray[numpy.float32],
-    output_folder: Path,
+    output_path: Path,
     writer: Literal['rasterio', 'large_image'] = 'rasterio',
 ) -> None:
-    output_path = output_folder / 'flood_simulation.tif'
     if writer == 'rasterio':
         rasterio_write(flood_results, output_path)
     elif writer == 'large_image':
