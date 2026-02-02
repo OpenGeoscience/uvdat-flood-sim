@@ -18,13 +18,15 @@ This is a proof of concept for the Charles River in Boston that could be transla
 
 2. Annual Probability: the probability that a flood of this magnitude will occur in any given year. This value must be greater than 0 and less than 1. The default is 0.04, which represents a 1 in 25 year flood.
 
-3. Hydrograph: a list of proportions that sum to 1; these represent fractions of the total rainfall volume per timestep.
+3. Hydrograph: a list of proportions that sum to 1; these represent fractions of the total rainfall volume per timestep. This may also be specified as Hydrograph Name, where options include "short_charles" and "long_charles", which represent premade hydrograph data. The former is the default.
 
-4. Potential Evapotranspiration Percentile: Select the 25th, 50th, 75th, or 90th percentile value for potential evapotranspiration
+4. Potential Evapotranspiration Percentile: Select the percentile value for potential evapotranspiration
 
-5. Soil Moisture Percentile: Select the 25th, 50th, 75th, or 90th percentile value for soil moisture
+5. Soil Moisture Percentile: Select the percentile value for soil moisture
 
-6. Ground Water Percentile: Select the 25th, 50th, 75th, or 90th percentile value for ground water
+6. Ground Water Percentile: Select the percentile value for ground water
+
+7. Initial Condition Set: Initial conditions "001", "002", and "003" start real-world emissions from year 1850 with the climate state from the 1001st, 1021st, and 1041st year of a pre-industrial control simulation. Since Earth's climate undergoes multi-year and multi-decadal cycles, the different initializations reveal the range of possible climates in real-world years 2031 and beyond.
 
 ## Installation
 
