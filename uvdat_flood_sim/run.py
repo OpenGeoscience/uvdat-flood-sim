@@ -23,6 +23,7 @@ def run_sim(
     pet_percentile: int,
     sm_percentile: int,
     gw_percentile: int,
+    return_dict: bool = False
 ) -> NDArray[numpy.float32]:
     """
     Run the full end-to-end UVDAT flood simulation pipeline.
@@ -34,6 +35,7 @@ def run_sim(
     :param pet_percentile: Potential evapotranspiration percentile.
     :param sm_percentile: Soil moisture percentile.can
     :param gw_percentile: Ground water percentile.
+    :param return_dict: If true, return a dictionary of all outputs. If false (default), return only the flood.
     :return: Array with 2 spatial dimensions and 1 time dimension.
     """
     with PERCENTILES_PATH.open('r') as f:
@@ -69,4 +71,11 @@ def run_sim(
     # flood is a numpy array with 2 spatial dimensions and 1 time dimension
     logger.info(f'Hydrodynamic prediction: flood raster with shape {flood.shape}')
 
-    return flood
+    if return_dict:
+        return dict(
+            flood=flood,
+            precipitation_level_mm=level,
+            discharge_ft3_per_second=q,
+        )
+    else:
+        return flood
