@@ -5,7 +5,7 @@ from pathlib import Path
 
 DATA_FOLDER = importlib.resources.files('uvdat_flood_sim.data')
 
-DOWNSCALING_MODEL_PATH = DATA_FOLDER / 'downscaling_model.pkl'
+DOWNSCALING_MODEL_PATH = DATA_FOLDER / 'downscaling_model.onnx'
 HYDROLOGICAL_MODEL_PATH = DATA_FOLDER / 'hydrological_model.npy'
 RATING_CURVE_PATH = DATA_FOLDER / 'rating_curve.csv'
 HAND_PATH = DATA_FOLDER / 'boston_hand.tif'
