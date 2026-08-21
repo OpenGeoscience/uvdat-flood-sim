@@ -17,6 +17,7 @@ dependencies = [
   "click",
   "matplotlib",
   "numpy",
+  "onnxruntime",
   "pandas",
   "pyproj",
   "rasterio",
